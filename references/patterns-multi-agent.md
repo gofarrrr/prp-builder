@@ -1,4 +1,4 @@
-# Multi-Agent Patterns for PRP Development
+# Multi-Agent Design Patterns
 
 When to use multiple agents and how to structure their collaboration.
 
@@ -18,6 +18,8 @@ Use multiple agents when:
 
 ## Pattern 1: Supervisor/Orchestrator
 
+**What:** Central coordinator delegates to specialized workers.
+
 ```
 ┌─────────────────────────────────────┐
 │           Supervisor                │
@@ -30,208 +32,26 @@ Use multiple agents when:
      └──────────┘ └──────────┘
 ```
 
-### When to Use
+**When to Use:**
 - Complex tasks with clear decomposition
 - Need oversight across domains
 - Human intervention points important
+- Quality control required
 
-### For PRP Development
-```yaml
-supervisor_tasks:
-  - "Gather user requirements"
-  - "Select appropriate PRP template"
-  - "Coordinate specialist agents"
-  - "Synthesize final PRP"
+**Supervisor Responsibilities:**
+- Parse user request
+- Decompose into subtasks
+- Assign to appropriate workers
+- Synthesize worker outputs
+- Handle errors and escalations
 
-specialist_agents:
-  codebase_analyst:
-    - "Discover existing patterns"
-    - "Find similar implementations"
-    - "Extract testing conventions"
+**Worker Characteristics:**
+- Single, focused capability
+- Limited context (just their task)
+- Returns structured output
+- No awareness of other workers
 
-  library_researcher:
-    - "Fetch external documentation"
-    - "Identify known gotchas"
-    - "Find implementation examples"
-```
-
-### Key Challenge: Telephone Game Problem
-
-Supervisors paraphrasing sub-agent responses lose fidelity.
-
-**Solution:** Implement `forward_message` tool for direct responses:
-```python
-# Let specialist response bypass supervisor when appropriate
-if response.is_complete and response.confidence > 0.9:
-    forward_to_user(response)
-else:
-    summarize_for_supervisor(response)
-```
-
----
-
-## Pattern 2: Peer-to-Peer/Swarm
-
-```
-┌──────────┐     ┌──────────┐
-│ Agent A  │◄────►│ Agent B  │
-└────┬─────┘     └─────┬────┘
-     │                 │
-     └────────┬────────┘
-              │
-        ┌─────▼─────┐
-        │  Agent C  │
-        └───────────┘
-```
-
-### When to Use
-- Flexible exploration needed
-- Rigid upfront planning counterproductive
-- Emergent requirements expected
-
-### For PRP Development
-```yaml
-handoff_protocol:
-  - agent: "requirements_gatherer"
-    handoff_to: "codebase_analyst"
-    trigger: "requirements complete"
-    state_passed: ["user_goals", "constraints"]
-
-  - agent: "codebase_analyst"
-    handoff_to: "template_selector"
-    trigger: "patterns discovered"
-    state_passed: ["patterns", "gotchas", "file_structure"]
-
-  - agent: "template_selector"
-    handoff_to: "prp_generator"
-    trigger: "template chosen"
-    state_passed: ["template_type", "populated_sections"]
-```
-
-### Advantages
-- No single point of failure
-- Effective for breadth-first exploration
-- Enables emergent problem-solving
-
----
-
-## Pattern 3: Hierarchical
-
-```
-┌───────────────────────────────────┐
-│         Strategy Layer            │
-│      (goal definition)            │
-└──────────────┬────────────────────┘
-               │
-┌──────────────▼────────────────────┐
-│         Planning Layer            │
-│      (task decomposition)         │
-└───────┬───────────────┬───────────┘
-        │               │
-┌───────▼───────┐ ┌─────▼─────────┐
-│  Execution    │ │   Execution   │
-│   (atomic)    │ │   (atomic)    │
-└───────────────┘ └───────────────┘
-```
-
-### When to Use
-- Large-scale projects
-- Enterprise workflows
-- Need both high-level planning and detailed execution
-
-### For PRP Development
-```yaml
-layers:
-  strategy:
-    role: "Define feature scope and success criteria"
-    output: "High-level requirements"
-
-  planning:
-    role: "Decompose into PRP sections"
-    output: "Section outlines with dependencies"
-
-  execution:
-    role: "Populate each section"
-    output: "Completed PRP sections"
-```
-
----
-
-## Token Economics Reality
-
-Multi-agent systems consume **significantly more tokens**:
-
-| Query Type | Token Multiplier |
-|------------|-----------------|
-| Simple query | 1× baseline |
-| Complex coordination | ~15× baseline |
-| Deep hierarchical | ~25× baseline |
-
-**Key insight:** Model upgrades often yield larger performance gains than simply doubling token budgets.
-
----
-
-## Critical Success Factors
-
-### 1. Output Validation Between Agents
-```python
-def validate_handoff(source_agent, target_agent, payload):
-    # Prevent error propagation
-    if not payload.is_valid():
-        return request_clarification(source_agent)
-
-    # Ensure completeness
-    if payload.missing_required_fields():
-        return request_completion(source_agent)
-
-    return proceed(target_agent, payload)
-```
-
-### 2. Weighted Voting Over Simple Consensus
-```python
-# Don't let weak model hallucinations dominate
-def aggregate_findings(agent_outputs):
-    weighted_results = []
-    for output in agent_outputs:
-        weight = output.confidence * agent_reliability_score
-        weighted_results.append((output, weight))
-    return select_highest_weighted(weighted_results)
-```
-
-### 3. Time-to-Live Limits
-```python
-# Prevent infinite loops
-MAX_AGENT_HOPS = 5
-current_hops = 0
-
-def handoff(target_agent):
-    global current_hops
-    current_hops += 1
-    if current_hops > MAX_AGENT_HOPS:
-        return escalate_to_user()
-    return execute(target_agent)
-```
-
-### 4. Explicit Handoff Protocols
-```yaml
-handoff:
-  from: "codebase_analyst"
-  to: "prp_generator"
-  state:
-    patterns: "[list of discovered patterns]"
-    gotchas: "[list of gotchas]"
-    file_tree: "[current structure]"
-  context_compression: "summarize older findings"
-```
-
----
-
-## Application to PRP Builder Skill
-
-### Recommended Architecture
-
-For the PRP Builder, use **Supervisor pattern** with specialized workers:
-
+**PRP Application:**
 ```yaml
 supervisor: "prp_builder_orchestrator"
   responsibilities:
@@ -257,17 +77,211 @@ workers:
       - "Search for known issues"
       - "Find implementation examples"
     output: "Documentation references, constraints, examples"
-
-  template_selector:
-    trigger: "Requirements gathered"
-    tasks:
-      - "Assess scope and complexity"
-      - "Match to template type"
-      - "Identify required sections"
-    output: "Template selection with rationale"
 ```
 
-### Context Isolation Strategy
+**Key Challenge: Telephone Game Problem**
+
+Supervisors paraphrasing sub-agent responses lose fidelity.
+
+**Solution:** Forward directly when appropriate:
+```python
+if response.is_complete and response.confidence > 0.9:
+    forward_to_user(response)  # Bypass supervisor
+else:
+    summarize_for_supervisor(response)
+```
+
+---
+
+## Pattern 2: Peer-to-Peer/Swarm
+
+**What:** Agents hand off to each other without central coordinator.
+
+```
+┌──────────┐     ┌──────────┐
+│ Agent A  │◄────►│ Agent B  │
+└────┬─────┘     └─────┬────┘
+     │                 │
+     └────────┬────────┘
+              │
+        ┌─────▼─────┐
+        │  Agent C  │
+        └───────────┘
+```
+
+**When to Use:**
+- Flexible exploration needed
+- Rigid upfront planning counterproductive
+- Emergent requirements expected
+- No clear hierarchy
+
+**Handoff Protocol:**
+```yaml
+handoff_protocol:
+  - agent: "requirements_gatherer"
+    handoff_to: "codebase_analyst"
+    trigger: "requirements complete"
+    state_passed: ["user_goals", "constraints"]
+
+  - agent: "codebase_analyst"
+    handoff_to: "template_selector"
+    trigger: "patterns discovered"
+    state_passed: ["patterns", "gotchas", "file_structure"]
+
+  - agent: "template_selector"
+    handoff_to: "prp_generator"
+    trigger: "template chosen"
+    state_passed: ["template_type", "populated_sections"]
+```
+
+**Advantages:**
+- No single point of failure
+- Effective for breadth-first exploration
+- Enables emergent problem-solving
+- Lower coordination overhead
+
+**Disadvantages:**
+- Harder to track progress
+- Risk of circular handoffs
+- No global optimization
+
+---
+
+## Pattern 3: Hierarchical
+
+**What:** Multiple layers of agents with different abstraction levels.
+
+```
+┌───────────────────────────────────┐
+│         Strategy Layer            │
+│      (goal definition)            │
+└──────────────┬────────────────────┘
+               │
+┌──────────────▼────────────────────┐
+│         Planning Layer            │
+│      (task decomposition)         │
+└───────┬───────────────┬───────────┘
+        │               │
+┌───────▼───────┐ ┌─────▼─────────┐
+│  Execution    │ │   Execution   │
+│   (atomic)    │ │   (atomic)    │
+└───────────────┘ └───────────────┘
+```
+
+**When to Use:**
+- Large-scale projects
+- Enterprise workflows
+- Need both high-level planning and detailed execution
+- Complex dependency management
+
+**Layer Definitions:**
+```yaml
+layers:
+  strategy:
+    role: "Define feature scope and success criteria"
+    output: "High-level requirements"
+    context: "User goals, business constraints"
+
+  planning:
+    role: "Decompose into PRP sections"
+    output: "Section outlines with dependencies"
+    context: "Strategy output, template structure"
+
+  execution:
+    role: "Populate each section"
+    output: "Completed PRP sections"
+    context: "Planning output, specific task"
+```
+
+---
+
+## Token Economics
+
+Multi-agent systems consume **significantly more tokens**:
+
+| Query Type | Token Multiplier |
+|------------|-----------------|
+| Simple query | 1× baseline |
+| Complex coordination | ~15× baseline |
+| Deep hierarchical | ~25× baseline |
+
+**Key insight:** Model upgrades often yield larger performance gains than simply doubling token budgets.
+
+**Cost Control Strategies:**
+```yaml
+cost_optimization:
+  - "Start with single agent, spawn only when needed"
+  - "Use cheaper models for worker agents"
+  - "Cache worker outputs aggressively"
+  - "Compress handoff state to minimum"
+  - "Set max_iterations for all loops"
+```
+
+---
+
+## Critical Success Factors
+
+### 1. Output Validation Between Agents
+
+```python
+def validate_handoff(source_agent, target_agent, payload):
+    # Prevent error propagation
+    if not payload.is_valid():
+        return request_clarification(source_agent)
+
+    # Ensure completeness
+    if payload.missing_required_fields():
+        return request_completion(source_agent)
+
+    return proceed(target_agent, payload)
+```
+
+### 2. Weighted Voting Over Simple Consensus
+
+```python
+# Don't let weak model hallucinations dominate
+def aggregate_findings(agent_outputs):
+    weighted_results = []
+    for output in agent_outputs:
+        weight = output.confidence * agent_reliability_score
+        weighted_results.append((output, weight))
+    return select_highest_weighted(weighted_results)
+```
+
+### 3. Time-to-Live Limits
+
+```python
+# Prevent infinite loops
+MAX_AGENT_HOPS = 5
+current_hops = 0
+
+def handoff(target_agent):
+    global current_hops
+    current_hops += 1
+    if current_hops > MAX_AGENT_HOPS:
+        return escalate_to_user()
+    return execute(target_agent)
+```
+
+### 4. Explicit Handoff Protocols
+
+```yaml
+handoff:
+  from: "codebase_analyst"
+  to: "prp_generator"
+  state:
+    patterns: "[list of discovered patterns]"
+    gotchas: "[list of gotchas]"
+    file_tree: "[current structure]"
+  context_compression: "summarize older findings"
+  validation: "all required fields present"
+```
+
+---
+
+## Context Isolation Strategy
+
+Each agent gets focused context:
 
 ```yaml
 context_budgets:
@@ -278,11 +292,16 @@ context_budgets:
       - "Template structure (compressed)"
     loaded_on_demand:
       - "Specialist outputs (summarized)"
+    never_loaded:
+      - "Raw tool outputs from workers"
+      - "Full file contents"
 
   codebase_analyst:
     always_loaded:
       - "Current task"
       - "File patterns to search"
+    loaded_on_demand:
+      - "File contents (on read)"
     never_loaded:
       - "Full user conversation history"
       - "Library documentation"
@@ -305,8 +324,60 @@ Single agent is better when:
 - No clear parallelization opportunity
 - Coordination overhead exceeds benefit
 - Simple, well-defined task
+- Latency is critical
 
-**For PRP Builder:** Most PRPs can be built with single-agent + tool calls. Reserve multi-agent for:
+**Decision Matrix:**
+
+| Task Characteristic | Single Agent | Multi-Agent |
+|---------------------|--------------|-------------|
+| Files affected: 1-3 | ✓ | |
+| Files affected: 10+ | | ✓ |
+| Clear steps | ✓ | |
+| Exploration needed | | ✓ |
+| Time-sensitive | ✓ | |
+| Quality-critical | | ✓ |
+| Known domain | ✓ | |
+| Unknown domain | | ✓ |
+
+---
+
+## Multi-Agent for PRP Builder
+
+**Recommended Architecture:**
+
+For most PRPs, use **single agent + tool calls**. Reserve multi-agent for:
 - Large codebases requiring extensive analysis
 - Features spanning multiple unfamiliar domains
 - Planning PRPs with significant research phase
+
+**When to Spawn:**
+
+```yaml
+spawn_triggers:
+  - condition: "codebase > 100 files"
+    spawn: "codebase_analyst"
+    reason: "Heavy file loading isolated"
+
+  - condition: "unfamiliar libraries mentioned"
+    spawn: "library_researcher"
+    reason: "External fetching isolated"
+
+  - condition: "planning PRP selected"
+    spawn: "research_agent"
+    reason: "Broad exploration needed"
+```
+
+---
+
+## Multi-Agent Checklist
+
+Before implementing multi-agent:
+
+- [ ] Is single agent insufficient? (try it first)
+- [ ] Are agent responsibilities clearly separated?
+- [ ] Is handoff protocol defined?
+- [ ] Are TTL limits set?
+- [ ] Is output validation in place?
+- [ ] Is context isolation configured?
+- [ ] Are costs acceptable?
+- [ ] Is escalation path defined?

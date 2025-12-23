@@ -338,14 +338,42 @@ Load these when generating PRPs:
 | Generative AI | `templates/generative-ai.md` | LLM integrations, AI features |
 | Tasks from PRP | `templates/tasks-from-prp.md` | Generate task checklist from completed PRP |
 
-| Knowledge Base | Purpose |
-|----------------|---------|
-| `references/context-engineering.md` | Context optimization principles |
-| `references/validation-framework.md` | Four-level validation guide |
-| `references/anti-patterns.md` | What to avoid in PRPs |
-| `references/best-practices-2025.md` | Current recommendations |
-| `references/guidance-and-pushback.md` | Proactive guidance triggers |
-| `references/multi-agent-patterns.md` | When/how to use multiple agents |
+### Reference Files (15 total)
+
+**Architecture Fundamentals:**
+| File | Purpose | Load When |
+|------|---------|-----------|
+| `references/agent-core-systems.md` | Four core systems: Perception, Reasoning, Memory, Execution | Understanding agent basics |
+| `references/memory-architecture.md` | Four-layer memory: Working, Sessions, Memory, Artifacts | Memory-related features |
+
+**Context Engineering:**
+| File | Purpose | Load When |
+|------|---------|-----------|
+| `references/context-scaling-principles.md` | Nine principles for scalable context | Any PRP creation |
+| `references/context-failure-modes.md` | Nine failure modes with fixes | Debugging, reviews |
+| `references/context-optimization.md` | Token budgets, compression, strategies | Large PRPs |
+
+**Design Patterns:**
+| File | Purpose | Load When |
+|------|---------|-----------|
+| `references/patterns-sequential.md` | Chaining, routing, fallback, gates | Linear workflows |
+| `references/patterns-parallel.md` | Sectioning, map-reduce, voting | Concurrent work |
+| `references/patterns-planning.md` | Plan-execute, ReAct, reflection | Complex features |
+| `references/patterns-multi-agent.md` | Supervisor, swarm, hierarchical | Multi-agent PRPs |
+
+**Quality & Validation:**
+| File | Purpose | Load When |
+|------|---------|-----------|
+| `references/anti-patterns.md` | 10 anti-patterns to avoid | PRP review |
+| `references/validation-framework.md` | Four-level validation guide | Any PRP |
+| `references/best-practices-2025.md` | Categorized recommendations | Any PRP |
+
+**Operational:**
+| File | Purpose | Load When |
+|------|---------|-----------|
+| `references/tool-design.md` | Tool naming, descriptions, composition | Tool-heavy features |
+| `references/production-checklist.md` | Deployment, monitoring, security, cost | Production features |
+| `references/guidance-and-pushback.md` | Proactive guidance triggers | User interaction |
 
 ---
 

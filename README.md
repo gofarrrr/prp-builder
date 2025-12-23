@@ -80,21 +80,30 @@ This creates a trackable task list with checkboxes:
 
 ```
 prp-builder/
-├── SKILL.md                     # Main skill definition
+├── SKILL.md                              # Main skill definition
 ├── templates/
-│   ├── task.md                  # Lightweight template
-│   ├── story.md                 # Sprint task template
-│   ├── base.md                  # Comprehensive template
-│   ├── planning.md              # Research-first template
-│   ├── generative-ai.md         # AI/LLM specialized
-│   └── tasks-from-prp.md        # Task generation
-└── references/
-    ├── context-engineering.md   # Token budgets, attention
-    ├── validation-framework.md  # Four-level validation
-    ├── anti-patterns.md         # What to avoid
-    ├── best-practices-2025.md   # Current recommendations
-    ├── guidance-and-pushback.md # Proactive intervention
-    └── multi-agent-patterns.md  # Multi-agent architecture
+│   ├── task.md                           # Lightweight template
+│   ├── story.md                          # Sprint task template
+│   ├── base.md                           # Comprehensive template
+│   ├── planning.md                       # Research-first template
+│   ├── generative-ai.md                  # AI/LLM specialized
+│   └── tasks-from-prp.md                 # Task generation
+└── references/                           # 15 focused reference files
+    ├── agent-core-systems.md             # Perception, Reasoning, Memory, Execution
+    ├── memory-architecture.md            # Four-layer memory model
+    ├── context-scaling-principles.md     # Nine scaling principles
+    ├── context-failure-modes.md          # Nine failure modes
+    ├── context-optimization.md           # Token budgets, compression
+    ├── patterns-sequential.md            # Chaining, routing, fallback
+    ├── patterns-parallel.md              # Sectioning, voting, parallelization
+    ├── patterns-planning.md              # ReAct, reflection, self-correction
+    ├── patterns-multi-agent.md           # Supervisor, swarm, hierarchical
+    ├── anti-patterns.md                  # What to avoid
+    ├── validation-framework.md           # Four-level validation
+    ├── best-practices-2025.md            # Current recommendations
+    ├── tool-design.md                    # Tool naming, descriptions
+    ├── production-checklist.md           # Deployment, security, cost
+    └── guidance-and-pushback.md          # Proactive intervention
 ```
 
 ## Best Practices
@@ -123,12 +132,19 @@ prp-builder/
 
 ## Context Engineering Principles
 
-This skill applies context engineering best practices:
+This skill applies context engineering best practices based on nine scaling principles:
 
-- **Progressive Disclosure** — Load information only when needed
-- **Token Budget Awareness** — Keep PRPs concise
-- **Attention Positioning** — Critical info at section boundaries
-- **Degradation Prevention** — Single responsibility per task
+1. **Context Computed, Not Accumulated** — Generate dynamically, don't pile up
+2. **Separate Storage from Presentation** — Store full, present filtered
+3. **Scope by Default** — Start minimal, expand when needed
+4. **Retrieval Over Pinning** — Fetch on demand, don't preload
+5. **Schema-Driven Summarization** — Consistent compression format
+6. **Offload to Tools** — Extend with tools, not context
+7. **Isolate with Sub-Agents** — Spawn for heavy operations
+8. **Cache Stability** — Cache stable, recompute volatile
+9. **Observability First** — Measure and monitor usage
+
+See `references/context-scaling-principles.md` for detailed implementation patterns.
 
 ## Proactive Guidance
 

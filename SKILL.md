@@ -1,18 +1,11 @@
+---
+name: prp-builder
+description: Build Production-Ready PRPs (Product Requirement Prompts) through guided conversation. Use when creating implementation specs, feature requirements, or task breakdowns for AI coding agents. Triggers: "create a PRP", "build PRP", "implementation specs", "feature requirements", "/prp-build".
+---
+
 # PRP Builder Skill
 
 Build Production-Ready PRPs (Product Requirement Prompts) through guided conversation.
-
-## Description
-
-An interactive skill that guides users through creating comprehensive PRPs using battle-tested templates and context engineering best practices. Produces implementation-ready specifications that AI coding agents can execute with minimal ambiguity.
-
-## Trigger Phrases
-
-- "help me create a PRP"
-- "build a PRP for"
-- "I need a product requirement prompt"
-- "create implementation specs for"
-- "/prp-build"
 
 ---
 
